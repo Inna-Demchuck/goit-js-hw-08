@@ -9,7 +9,7 @@ formEl.addEventListener('input', throttle(onInputChange, 500));
 formEl.addEventListener('submit', onFormSubmit);
 textForm();
 
-const formData = {};
+const formData = { email: "", message: "" };
 
 function onInputChange(event) {
     formData[event.target.name] = event.target.value;
@@ -18,22 +18,22 @@ function onInputChange(event) {
 
 function onFormSubmit(event) {
     event.preventDefault();
+    event.currentTarget.reset();
     formData.email = inputEl.value;
     formData.message = messageEl.value;
     console.log(formData);
-    event.currentTarget.reset();
     localStorage.removeItem(STORAGE_KEY);
 }
 
 function textForm() {
-    const newValues = localStorage.getItem(STORAGE_KEY);
-    const valuesObject = JSON.parse(newValues);
+    const formValues = localStorage.getItem(STORAGE_KEY);
+    const objectValues = JSON.parse(formValues);
 
-    if (valuesObject) {
-        const savedEmail = valuesObject.email;
-        inputEl.value = savedEmail;
+    if (objectValues) {
+        const savedEmail = objectValues.email;
+        inputEl.value = savedEmail || '';
 
-        const savedMessage = valuesObject.message;
-        messageEl.value = savedMessage;
+        const savedMessage = objectValues.message;
+        messageEl.value = savedMessage || '';
     };
 };
