@@ -1,39 +1,51 @@
 import throttle from 'lodash.throttle';
 
-const formEl = document.querySelector('.feedback-form');
+const formEl = document.querySelector('.feedback-form')
 const inputEl = document.querySelector('input');
-const messageEl = document.querySelector('textarea');
-const STORAGE_KEY = 'feedback-form-state';
+const textareaEl = document.querySelector('textarea');
 
-formEl.addEventListener('input', throttle(onInputChange, 500));
-formEl.addEventListener('submit', onFormSubmit);
-textForm();
 
-const formData = { email: "", message: "" };
+const STORAGE_KEY = "feedback-form-state";
 
-function onInputChange(event) {
-    formData[event.target.name] = event.target.value;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+
+inputEl.addEventListener('input', throttle(onInputChange, 500))
+textareaEl.addEventListener('input', throttle(onInputChange, 500))
+
+
+updateInput();
+
+formEl.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData(formEl);
+    formData.forEach((name, value) => {
+        console.log(name, value);
+    })
+
+    formEl.reset();
+
+    localStorage.removeItem(STORAGE_KEY);
+});
+
+
+function onInputChange(e) {
+    const email = inputEl.value;
+    const message = textareaEl.value;
+    const formData = {
+        email,
+        message,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData))
 };
 
-function onFormSubmit(event) {
-    event.preventDefault();
-    event.currentTarget.reset();
-    formData.email = inputEl.value;
-    formData.message = messageEl.value;
-    console.log(formData);
-    localStorage.removeItem(STORAGE_KEY);
-}
 
-function textForm() {
-    const formValues = localStorage.getItem(STORAGE_KEY);
-    const objectValues = JSON.parse(formValues);
+function updateInput() {
+    let inputSaved = localStorage.getItem(STORAGE_KEY);
+    inputSaved = JSON.parse(inputSaved);
 
-    if (objectValues) {
-        const savedEmail = objectValues.email;
-        inputEl.value = savedEmail || '';
+    if (inputSaved) {
 
-        const savedMessage = objectValues.message;
-        messageEl.value = savedMessage || '';
+        inputEl.value = inputSaved.email;
+        textareaEl.value = inputSaved.message;
+
     };
 };
